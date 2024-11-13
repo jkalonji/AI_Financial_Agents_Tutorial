@@ -21,3 +21,4 @@ tool_spec = FinanceAgentToolSpec(
 
 
 
+print(tool_spec.spec_functions)
