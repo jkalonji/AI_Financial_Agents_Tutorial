@@ -8,8 +8,10 @@ POLYGON_API_KEY = os.environ.get('POLYGON_API_KEY')
 FINNHUB_API_KEY = os.environ.get('FINNHUB_API_KEY')
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
 ALPHA_VANTAGE_API_KEY = os.environ.get('ALPHA_VANTAGE_API_KEY')
-OPENAI_API_KEY = os.environ.get('OPEN_AI_API_KEY')
+#OPENAI_API_KEY = os.environ.get('OPEN_AI_API_KEY')
 GPT_MODEL_NAME = "gpt-4o-mini"
+
+
 
 
 
@@ -19,7 +21,6 @@ tool_spec = FinanceAgentToolSpec(
         NEWS_API_KEY,
         ALPHA_VANTAGE_API_KEY
     )
-
 
 def create_agent(
     polygon_api_key: str,
@@ -48,5 +49,15 @@ agent = create_agent(
 )
      
 
-response = agent.chat("What was the last closing price of amazon?")
+print(tool_spec.to_tool_list())
+#response = agent.chat("What is the highest price attained by Google ?")
+#response = agent.chat("Tell me about the gainers stocks today on the american automotive market")
+#response = agent.chat("Provide general information about how to identify gainer stocks in the automotive sector")
+response = agent.chat("Provide a trading strategy to invest in the automotive sector")
+
 print(response)
+
+# Écrire la réponse dans un fichier markdown
+with open("financial-guidelines.md", "w") as file:
+    file.write("# Financial Guidelines\n\n")
+    file.write(str(response))
