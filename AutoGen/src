@@ -1,0 +1,43 @@
+import autogen
+from autogen import ConversableAgent, AssistantAgent, UserProxyAgent
+import datetime
+import os
+
+OPENAI_API_KEY = os.environ.get('OPEN_AI_API_KEY')
+
+# Configuration du modèle LLM
+llm_config = {
+    "config_list": [{"model": "gpt-4", "api_key": OPENAI_API_KEY}],
+    "temperature": 0
+}
+
+# Création de l'agent assistant
+assistant = AssistantAgent(
+    name="assistant",
+    llm_config=llm_config,
+    system_message="You are a helpful AI assistant that can write Python code to create plots and analyze stock data. If you encounter abug, think critically and step by step to resolve it, and re-submit your code."
+)
+
+# Création de l'agent proxy utilisateur
+user_proxy = UserProxyAgent(
+    name="user_proxy",
+    human_input_mode="NEVER",
+    max_consecutive_auto_reply=10,
+    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
+    code_execution_config={
+        "work_dir": "coding",
+        "use_docker": False,
+    }
+)
+
+# Message initial
+today = datetime.datetime.now().date()
+message = f"""Today is {today}. Create a plot showing stock gain YTD for BTCUSD and ETHUSD. Also add the 10 day moving averages, and a correlation metric between BTC and ETH
+Make sure the code is in a markdown code block and save the figure to a file ytd_stock_gains.png. 
+Use yfinance to fetch the stock data. Use dark mode to display the data"""
+
+# Initiation du chat
+user_proxy.initiate_chat(
+    assistant,
+    message=message
+)
