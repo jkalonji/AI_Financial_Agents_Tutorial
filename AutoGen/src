@@ -1,10 +1,9 @@
 import autogen
-from autogen import ConversableAgent, AssistantAgent, UserProxyAgent
+from autogen import ConversableAgent, AssistantAgent, UserProxyAgent, GroupChat, GroupChatManager
 import datetime
 import os
 
 OPENAI_API_KEY = os.environ.get('OPEN_AI_API_KEY')
-
 # Configuration du modèle LLM
 llm_config = {
     "config_list": [{"model": "gpt-4", "api_key": OPENAI_API_KEY}],
@@ -15,7 +14,22 @@ llm_config = {
 assistant = AssistantAgent(
     name="assistant",
     llm_config=llm_config,
-    system_message="You are a helpful AI assistant that can write Python code to create plots and analyze stock data. If you encounter abug, think critically and step by step to resolve it, and re-submit your code."
+    system_message=f"""You are a helpful AI assistant that can write Python code to create plots and analyze stock data. 
+    If you encounter abug, think critically and step by step to resolve it, and re-submit your code.
+    Use polars instead of pandas. Adapt the column names so that they can be easily accessed"""
+)
+
+# Création de l'agent assistant pour la révision du code
+code_reviewer = AssistantAgent(
+    name="code_reviewer",
+    llm_config=llm_config,
+    system_message="""You are an expert Python code reviewer. Your task is to review the code written by the assistant, 
+    identify any issues or potential improvements, and suggest corrections. Focus on:
+    1. Correctness of the code
+    2. Efficiency and performance
+    3. Best practices and coding standards
+    4. Potential bugs or edge cases
+    Provide your feedback in a clear and constructive manner."""
 )
 
 # Création de l'agent proxy utilisateur
@@ -32,12 +46,30 @@ user_proxy = UserProxyAgent(
 
 # Message initial
 today = datetime.datetime.now().date()
-message = f"""Today is {today}. Create a plot showing stock gain YTD for BTCUSD and ETHUSD. Also add the 10 day moving averages, and a correlation metric between BTC and ETH
+message = f"""Today is {today}. Create a correlation matrix between price movement for BTC, and ETH.
 Make sure the code is in a markdown code block and save the figure to a file ytd_stock_gains.png. 
-Use yfinance to fetch the stock data. Use dark mode to display the data"""
+ Use dark mode to display the data. Open the chart at the end of your code execution"""
 
 # Initiation du chat
+#user_proxy.initiate_chat(
+#    assistant,
+#    message=message
+#)
+
+
+# Création d'un GroupChat
+groupchat = GroupChat(
+    agents=[user_proxy, assistant, code_reviewer],
+    messages=[],
+    max_round=5
+)
+
+# Création d'un manager pour le GroupChat
+manager = GroupChatManager(groupchat=groupchat, llm_config=llm_config)
+
+
+# Initiation de la conversation
 user_proxy.initiate_chat(
-    assistant,
+    manager,
     message=message
 )
