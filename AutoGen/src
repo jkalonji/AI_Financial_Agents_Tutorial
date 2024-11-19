@@ -32,6 +32,18 @@ code_reviewer = AssistantAgent(
     Provide your feedback in a clear and constructive manner."""
 )
 
+# Création de l'agent générateur de graphiques
+graph_generator = AssistantAgent(
+    name="graph_generator",
+    llm_config=llm_config,
+    system_message="""You are a specialized AI assistant focused on generating graphs and visualizations. Your tasks include:
+    1. Creating two different graphs for a dashboard using Python and libraries like Matplotlib or Plotly.
+    2. Ensuring the graphs are visually appealing and informative.
+    3. Saving the graphs as image files.
+    4. Providing code to display these graphs in a simple dashboard layout.
+    Use polars for data manipulation if needed. Make sure to use dark mode for better visibility."""
+)
+
 # Création de l'agent proxy utilisateur
 user_proxy = UserProxyAgent(
     name="user_proxy",
@@ -46,9 +58,12 @@ user_proxy = UserProxyAgent(
 
 # Message initial
 today = datetime.datetime.now().date()
-message = f"""Today is {today}. Create a correlation matrix between price movement for BTC, and ETH.
-Make sure the code is in a markdown code block and save the figure to a file ytd_stock_gains.png. 
- Use dark mode to display the data. Open the chart at the end of your code execution"""
+message = f"""Today is {today}. Create a dashboard with two graphs:
+1. A correlation matrix between price movements for BTC and ETH.
+2. A line chart showing the price trends of BTC and ETH over the last month.
+Make sure the code is in markdown code blocks and save the figures to files.
+Use dark mode to display the data. Create a simple dashboard layout to display both graphs.
+Open the dashboard at the end of your code execution."""
 
 # Initiation du chat
 #user_proxy.initiate_chat(
@@ -59,9 +74,9 @@ Make sure the code is in a markdown code block and save the figure to a file ytd
 
 # Création d'un GroupChat
 groupchat = GroupChat(
-    agents=[user_proxy, assistant, code_reviewer],
+    agents=[user_proxy, assistant, code_reviewer, graph_generator],
     messages=[],
-    max_round=5
+    max_round=7
 )
 
 # Création d'un manager pour le GroupChat
