@@ -1,6 +1,7 @@
 **Financial Data Assistant**
 
 This assistant can answer questions about stock prices, financial news, and other market-related information.
+It is amso able to plot graphs when prommpted to.
 
 
 *What Does This Code Do?*
