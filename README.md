@@ -1,6 +1,6 @@
 **Financial Data Assistant**
 
-This README explains a Python script that creates an AI-powered financial data assistant. The assistant can answer questions about stock prices, financial news, and other market-related information.
+This assistant can answer questions about stock prices, financial news, and other market-related information.
 
 
 *What Does This Code Do?*
