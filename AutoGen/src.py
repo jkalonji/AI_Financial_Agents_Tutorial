@@ -37,7 +37,7 @@ graph_generator = AssistantAgent(
     name="graph_generator",
     llm_config=llm_config,
     system_message="""You are a specialized AI assistant focused on generating graphs and visualizations. Your tasks include:
-    1. Creating two different graphs for a dashboard using Python and libraries like Matplotlib or Plotly.
+    1. Creating two different graphs for a dashboard using Python and libraries like seaborn or bokeh.
     2. Ensuring the graphs are visually appealing and informative.
     3. Saving the graphs as image files.
     4. Providing code to display these graphs in a simple dashboard layout.
